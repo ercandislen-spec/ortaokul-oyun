@@ -1,0 +1,339 @@
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --card-hover: #273549;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --c5: #22c55e;
+  --c6: #eab308;
+  --c7: #f97316;
+  --c8: #ef4444;
+  --radius: 14px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 28px;
+  background: var(--card);
+  border-bottom: 2px solid #334155;
+  flex-wrap: wrap;
+}
+
+.logo {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.breadcrumb { font-size: 0.95rem; color: var(--muted); }
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb .sep { margin: 0 8px; color: #475569; }
+
+.container {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 36px 20px;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 18px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid #1e293b;
+}
+
+.page-title { font-size: 1.8rem; margin-bottom: 6px; }
+.page-sub { color: var(--muted); margin-bottom: 30px; }
+
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #334155;
+  border-radius: var(--radius);
+  padding: 28px 22px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  display: block;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: var(--card-hover);
+  border-color: var(--accent);
+}
+
+.card .icon { font-size: 2.6rem; margin-bottom: 14px; display: block; }
+.card h2 { font-size: 1.35rem; margin-bottom: 8px; }
+.card p { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+
+.card.class-5 { border-top: 4px solid var(--c5); }
+.card.class-6 { border-top: 4px solid var(--c6); }
+.card.class-7 { border-top: 4px solid var(--c7); }
+.card.class-8 { border-top: 4px solid var(--c8); }
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #334155;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+/* ---------- Ana sayfa: sınıf seçmeden oynanan oyunlar ---------- */
+.ana-oyunlar { margin-bottom: 34px; }
+
+.bolum-baslik { margin-bottom: 14px; }
+.bolum-baslik h2 { font-size: 1.25rem; margin-bottom: 4px; }
+.bolum-baslik p { color: var(--muted); font-size: 0.9rem; }
+
+.wordle-kart { border-top: 4px solid var(--c5); }
+
+.yeni-etiket {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #052e16;
+  background: var(--c5);
+  border-radius: 999px;
+  padding: 3px 8px;
+  margin-left: 6px;
+}
+
+.unit-number {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.game-card { cursor: default; display: flex; flex-direction: column; }
+.game-card:hover { transform: translateY(-4px); }
+.game-link { color: inherit; text-decoration: none; display: block; flex: 1; }
+.game-card .siralama-btn { margin-top: 18px; align-self: flex-start; }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+
+.empty-state .icon { font-size: 3rem; margin-bottom: 14px; }
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+.back-link:hover { text-decoration: underline; }
+
+.subject-tag {
+  font-size: 0.78rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+/* ---------- Almanca zorluk seçimi ---------- */
+.zorluk-secim {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 1px solid #334155;
+  border-radius: var(--radius);
+}
+
+.zorluk-baslik {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.zorluk-butonlar { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.zorluk-btn {
+  font: inherit;
+  font-weight: 700;
+  min-height: 48px;
+  padding: 10px 26px;
+  border: 2px solid #334155;
+  border-radius: 999px;
+  background: var(--card-hover);
+  color: var(--text);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.zorluk-btn:hover { border-color: var(--accent); }
+.zorluk-btn:active { transform: scale(0.97); }
+.zorluk-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.zorluk-btn.aktif { background: var(--accent); border-color: var(--accent); color: #0f172a; }
+
+.zorluk-not {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .zorluk-not { margin-left: 0; }
+}
+
+/* ---------- Sınıflarım / Öğrenciler ---------- */
+.sinif-yonetim { margin-top: 46px; }
+
+.sy-baslik {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.sy-baslik h2 { font-size: 1.3rem; }
+
+.sy-aciklama { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; max-width: 760px; }
+
+.btn-mini {
+  background: #24334a;
+  color: var(--accent);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-mini:hover { background: #33477a; transform: translateY(-1px); }
+.btn-ekle { background: var(--accent); color: #0b1220; border-color: var(--accent); }
+.btn-ekle:hover { background: #7dd3fc; }
+.btn-sil { color: #f87171; padding: 8px 10px; }
+
+.sy-liste {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.sy-kart {
+  background: var(--card);
+  border: 1px solid #334155;
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.sy-kart.aktif { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+.sy-kart-baslik {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.sy-kart-baslik h3 { font-size: 1.05rem; }
+.sy-sayi { color: var(--muted); font-size: 0.78rem; font-weight: 500; margin-left: 6px; }
+.sy-kart-aksiyon { display: flex; align-items: center; gap: 8px; }
+
+.sy-aktif-etiket {
+  background: #14532d;
+  color: #4ade80;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.sy-ogrenciler { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0; min-height: 30px; }
+
+.sy-cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  padding: 5px 6px 5px 12px;
+  font-size: 0.88rem;
+}
+
+.sy-cip-sil {
+  border: none;
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+.sy-cip-sil:hover { background: #f87171; color: #0b1220; }
+
+.sy-bos { color: #64748b; font-size: 0.85rem; font-style: italic; }
+.sy-bos-durum {
+  color: var(--muted);
+  padding: 22px;
+  border: 1px dashed #334155;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.sy-input {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+.sy-input:focus { outline: none; border-color: var(--accent); }
+.sy-input::placeholder { color: #475569; }
