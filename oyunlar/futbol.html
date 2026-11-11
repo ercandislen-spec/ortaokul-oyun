@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Futbol Şut Akademisi</title>
+  <link rel="stylesheet" href="futbol.css" />
+  <link rel="stylesheet" href="../puanlar.css" />
+</head>
+<body>
+  <div class="stadyum">
+    <header class="skorboard">
+      <a href="../index.html" class="btn-geri">← Siteye Dön</a>
+      <div class="skor">
+        <span id="skorBiz">0</span>
+        <span class="skor-sep">-</span>
+        <span id="skorCpu">0</span>
+      </div>
+      <div class="bilgi">
+        <span id="kalanHucum">Hücum: 8</span>
+        <span id="seriGoster" class="seri">🔥 Seri: 0</span>
+        <span id="dersBilgi"></span>
+      </div>
+    </header>
+
+    <div class="saha-kenar">
+      <div class="mesafe-yolu">
+        <div class="mesafe-dolgu" id="mesafeDolgu"></div>
+        <div class="mesafe-etiket" id="mesafeEtiket">Kendi sahamız</div>
+      </div>
+    </div>
+
+    <div class="saha" id="saha">
+      <div class="ceza-alani">
+        <div class="kale" id="kale">
+          <div class="ag"></div>
+          <div class="direk sol"></div>
+          <div class="direk sag"></div>
+          <div class="ust-direk"></div>
+          <div class="kaleci" id="kaleci"><span>🧤</span></div>
+          <div class="nisan" id="nisan"></div>
+        </div>
+      </div>
+      <div class="orta-cizgi"></div>
+      <div class="top" id="top">⚽</div>
+      <div class="efekt" id="efekt"></div>
+      <div class="mesaj" id="mesaj"></div>
+    </div>
+
+    <div class="ogrenci-satir">
+      <button class="btn-sec" id="btnOgrenciSec">🎲 Öğrenci Seç</button>
+      <button class="siralama-btn" id="btnSiralama">🏆 Sıralama</button>
+      <div class="ogrenci-bilgi">
+        <span class="ogrenci-sinif" id="ogrenciSinif">Sınıf yok</span>
+        <span class="ogrenci-goster" id="ogrenciGoster">—</span>
+      </div>
+    </div>
+
+    <div class="aksiyonlar" id="aksiyonlar">
+      <button class="btn aksiyon pas" id="btnPas">
+        <b>PAS</b><small>Kolay soru · Topu koru</small>
+      </button>
+      <button class="btn aksiyon calsim" id="btnCalsim">
+        <b>ÇALIM</b><small>Kolay soru · İleri çık</small>
+      </button>
+      <button class="btn aksiyon sut" id="btnSut">
+        <b>ŞUT</b><small>Zor soru · Tıkla, köşeye vur!</small>
+      </button>
+      <button class="btn aksiyon penalti" id="btnPenalti" disabled>
+        <b>PENALTI</b><small>Zor soru · Nişan al!</small>
+      </button>
+    </div>
+
+    <div class="modal-gizli" id="soruModal">
+      <div class="modal">
+        <div class="modal-baslik" id="soruTur">ÇALIM SORUSU</div>
+        <p class="soru-metin" id="soruMetin"></p>
+        <div id="secenekler"></div>
+        <p class="ipucu" id="soruIpucu"></p>
+      </div>
+    </div>
+
+    <div class="modal-gizli" id="sonucModal">
+      <div class="modal">
+        <h2 id="sonucBaslik">Maç Bitti!</h2>
+        <p id="sonucMetin"></p>
+        <div class="sonuc-butonlar">
+          <button class="btn aksiyon pas" id="btnTekrar">🔁 Tekrar Oyna</button>
+          <button class="btn aksiyon penalti" id="btnSiralamaSonuc">🏆 Sıralama</button>
+          <a class="btn aksiyon calsim" id="btnSiteye" href="../index.html">🏠 Siteye Dön</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-gizli" id="hucumModal">
+      <div class="modal">
+        <div class="modal-baslik">İYİ FIRSAT!</div>
+        <p class="soru-metin">Kaleci öne fırladı — <b>PENALTI</b> kazandın! Zor soruyu bil ve ağları havalandır.</p>
+        <button class="btn aksiyon penalti" id="btnPenaltiBasla">Penaltıya Geç 🎯</button>
+      </div>
+    </div>
+
+    <div class="modal-gizli" id="ogrenciModal">
+      <div class="modal ogrenci-modal">
+        <div class="modal-baslik">SEÇİLEN ÖĞRENCİ</div>
+        <p class="ogrenci-isim" id="ogrenciIsim">—</p>
+        <p class="ogrenci-alt" id="ogrenciAlt"></p>
+        <button class="btn aksiyon sut" id="btnOgrenciKapat">Tamam 👍</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../siniflar.js"></script>
+  <script src="../puanlar.js"></script>
+  <script src="sorular.js"></script>
+  <script src="futbol.js"></script>
+</body>
+</html>

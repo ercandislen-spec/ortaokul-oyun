@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wordle · İngilizce Kelime Tahmin Oyunu</title>
+  <link rel="stylesheet" href="wordle.css" />
+</head>
+
+<body>
+  <header class="wordle-ust">
+    <a class="geri-link" href="../index.html">← Ana Sayfa</a>
+    <h1>🟩 Wordle</h1>
+    <p class="alt-baslik">İngilizce kelime tahmin oyunu · Taslak sürüm</p>
+  </header>
+
+  <main class="wordle-alan">
+    <div class="durum-cubugu">
+      <span class="durum-cip" id="harfBilgi">— harf</span>
+      <span class="durum-cip" id="hakBilgi">6 hak</span>
+      <div class="durum-aksiyon">
+        <button type="button" class="btn-yeni btn-ozel" id="btnOzelKelime">✏️ Kendi Kelimeni Ekle</button>
+        <button type="button" class="btn-yeni" id="btnYeniKelime">↻ Yeni Kelime</button>
+      </div>
+    </div>
+
+    <div class="uzunluk-secim" role="group" aria-label="Kelime uzunluğu">
+      <span class="uzunluk-baslik">Kelime Uzunluğu</span>
+      <div class="uzunluk-butonlar">
+        <button type="button" class="uzunluk-btn" data-uzunluk="4" aria-pressed="false">4 Harf</button>
+        <button type="button" class="uzunluk-btn" data-uzunluk="5" aria-pressed="false">5 Harf</button>
+        <button type="button" class="uzunluk-btn" data-uzunluk="6" aria-pressed="false">6 Harf</button>
+      </div>
+    </div>
+
+    <div class="tahta" id="tahta" role="grid" aria-label="Kelime tahmin tahtası"></div>
+
+    <p class="mesaj" id="mesaj" role="status" aria-live="polite"></p>
+
+    <div class="klavye" id="klavye" aria-label="İngilizce klavye"></div>
+
+    <section class="kurallar-kutu">
+      <h2>Nasıl Oynanır?</h2>
+      <ul>
+        <li>Önce <b>4, 5 veya 6 harfli</b> bir kelime uzunluğu seç.</li>
+        <li>İngilizce gizli kelimeyi <b>6 denemede</b> bulmaya çalış.</li>
+        <li><span class="ornek dogru">A</span> Yeşil: harf <b>doğru yerde</b>.</li>
+        <li><span class="ornek var">B</span> Sarı: harf kelimede <b>var</b>, ama yeri yanlış.</li>
+        <li><span class="ornek yok">C</span> Gri: harf kelimede <b>yok</b>.</li>
+        <li>Kelimeleri ekran klavyesiyle veya bilgisayar klavyesiyle yazabilirsin.</li>
+        <li><b>✏️ Kendi Kelimeni Ekle</b> ile 3–12 harfli istediğin İngilizce kelimeyi yazıp oynayabilirsin.</li>
+      </ul>
+    </section>
+  </main>
+
+  <div class="ozel-modal" id="ozelModal" aria-hidden="true">
+    <div class="ozel-kutu" role="dialog" aria-modal="true" aria-labelledby="ozelBaslik">
+      <div class="ozel-baslik">
+        <h2 id="ozelBaslik">✏️ Kendi Kelimeni Ekle</h2>
+        <button type="button" class="ozel-kapat" id="btnOzelKapat" aria-label="Kapat">✕</button>
+      </div>
+      <p class="ozel-aciklama">İngilizce harflerle 3–12 harf arası bir kelime yaz. Oyun bu kelimeyle başlar.</p>
+      <input type="text" id="ozelGirdi" class="ozel-girdi" maxlength="12" autocomplete="off"
+        autocapitalize="characters" spellcheck="false" placeholder="Örn. SCHOOL" />
+      <p class="ozel-hata" id="ozelHata" role="alert"></p>
+      <div class="ozel-aksiyon">
+        <button type="button" class="btn-ozel-oyna" id="btnOzelOyna">Oyna</button>
+        <button type="button" class="btn-ozel-iptal" id="btnOzelIptal">İptal</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="wordle-kelimeler.js"></script>
+  <script src="wordle.js"></script>
+</body>
+
+</html>

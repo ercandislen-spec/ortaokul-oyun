@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Çarkıfelek</title>
+  <link rel="stylesheet" href="carkifelek.css" />
+  <link rel="stylesheet" href="../puanlar.css" />
+</head>
+
+<body>
+
+  <!-- ================= EKRAN 1: GİRİŞ / HAZIRLIK ================= -->
+  <section id="ekranGiris" class="ekran">
+    <div class="baslik">
+      <a class="geri-link" href="../index.html">← Dersler</a>
+      <h1>🎡 Çarkıfelek</h1>
+      <p id="dersBilgi">Ders · Ünite</p>
+    </div>
+
+    <div class="takim-satir">
+      <div class="takim-karti" id="kartT0">
+        <span class="etiket">1. Takım</span>
+        <span class="isim" id="isimT0">Kırmızılar</span>
+        <span class="puan-goster" id="puanT0">0</span>
+        <div class="uye-liste" id="uyelerT0"></div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="takim-karti" id="kartT1">
+        <span class="etiket">2. Takım</span>
+        <span class="isim" id="isimT1">Maviler</span>
+        <span class="puan-goster" id="puanT1">0</span>
+        <div class="uye-liste" id="uyelerT1"></div>
+      </div>
+    </div>
+
+    <div class="kontrol">
+      <button class="btn-sec buyuk" id="btnTakimBol">🎲 Rastgele Takımlara Böl</button>
+      <button class="btn ikincil" id="btnTakimSifirla">Takımları Sıfırla</button>
+    </div>
+
+    <div class="kurallar-kutu">
+      <h3>🎯 Nasıl Oynanır?</h3>
+      <ul>
+        <li>Çarkı çevir; çarpan kadar <b>puan kazanma şansı</b> yakala.</li>
+        <li>Puan karesinde <b>soru</b> sorulur: <b>bilirsen</b> puanı kazanırsın, <b>bilemezsen</b> puan alamazsın.</li>
+        <li><b>Her turdan sonra sıra rakibe geçer</b> — kimse üst üste oynayamaz!</li>
+        <li><b>İFLAS</b>: Kazandığın <b>tüm puanlar sıfırlanır</b> ve sıra rakibe geçer!</li>
+        <li><b>SIRA</b>: Soru sormadan tur atlanır, sıra doğrudan rakibe geçer.</li>
+        <li>Her takıma <b>16 soru</b> sorulur; en çok puanı olan takım kazanır!</li>
+      </ul>
+    </div>
+
+    <div class="kontrol">
+      <button class="btn" id="btnSiralamaGiris">🏆 Sıralama</button>
+    </div>
+
+    <div class="baslat-alani">
+      <button class="btn-baslat" id="btnOyunuBaslat">OYUNU BAŞLAT</button>
+      <p class="baslat-not" id="baslatNot">Takımlar hazır — çark seni bekliyor!</p>
+    </div>
+  </section>
+
+  <!-- ================= EKRAN 2: OYUN ================= -->
+  <section id="ekranOyun" class="ekran" hidden>
+    <div class="oyun-ust">
+      <button class="btn-kucuk" id="btnGeriGiris">← Çık</button>
+      <div class="sira-gosterge" id="siraGosterge">Sıra: Kırmızılar</div>
+      <button class="btn-kucuk" id="btnSiralamaOyun">🏆</button>
+    </div>
+
+    <div class="skor-satir">
+      <div class="skor-chip sol" id="chipT0">
+        <span class="chip-isim">Kırmızılar</span>
+        <span class="chip-puan" id="oyunPuanT0">0</span>
+        <span class="chip-soru" id="oyunSoruT0">0/16 soru</span>
+      </div>
+      <div class="skor-chip sag" id="chipT1">
+        <span class="chip-isim">Maviler</span>
+        <span class="chip-puan" id="oyunPuanT1">0</span>
+        <span class="chip-soru" id="oyunSoruT1">0/16 soru</span>
+      </div>
+    </div>
+
+    <div class="cark-alan">
+      <div class="isaret">▼</div>
+      <canvas id="cark" width="460" height="460"></canvas>
+    </div>
+
+    <div class="kontrol">
+      <button class="btn-cevir" id="btnCevir">🔄 ÇEVİR</button>
+    </div>
+
+    <div class="mesaj-kutu" id="mesajKutu" hidden></div>
+
+    <div class="kontrol">
+      <button class="btn ikincil" id="btnYeniOyun">🔄 Yeni Oyun</button>
+      <a class="btn ikincil" href="../index.html">🏠 Siteye Dön</a>
+    </div>
+  </section>
+
+  <!-- ================= SORU MODAL ================= -->
+  <div class="modal-gizli" id="soruModal">
+    <div class="soru-kutu">
+      <div class="soru-ust">
+        <span class="soru-takim" id="soruTakim">Kırmızılar</span>
+        <span class="soru-deger" id="soruDeger">+100</span>
+      </div>
+      <div class="soru-metni" id="soruMetni">Soru yükleniyor...</div>
+      <div class="secenekler" id="secenekler"></div>
+      <div class="soru-bilgi" id="soruBilgi"></div>
+      <div class="soru-aksiyon">
+        <button class="btn-baslat kucuk-baslat" id="btnDevam" hidden>Devam ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SONUÇ MODAL ================= -->
+  <div class="modal-gizli" id="sonucModal">
+    <div class="soru-kutu sonuc-kutu">
+      <div class="sonuc-baslik" id="sonucBaslik">🏆 Kazanan: Kırmızılar</div>
+      <div class="sonuc-detay" id="sonucDetay"></div>
+      <div class="sonuc-aksiyon">
+        <button class="btn-sec buyuk" id="btnTekrarOyna">🔄 Tekrar Oyna</button>
+        <button class="btn" id="btnSiralamaSonuc">🏆 Sıralama</button>
+        <a class="btn ikincil" href="../index.html">🏠 Siteye Dön</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../data.js"></script>
+  <script src="../siniflar.js"></script>
+  <script src="../puanlar.js"></script>
+  <script src="sorular.js"></script>
+  <script src="carkifelek.js"></script>
+</body>
+
+</html>

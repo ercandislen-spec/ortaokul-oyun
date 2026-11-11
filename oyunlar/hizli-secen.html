@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Hızlı Seçen Kazanır</title>
+  <link rel="stylesheet" href="hizli-secen.css" />
+  <link rel="stylesheet" href="../puanlar.css" />
+</head>
+
+<body>
+
+  <!-- ================= EKRAN 1: GİRİŞ / HAZIRLIK ================= -->
+  <section id="ekranGiris" class="ekran">
+    <div class="baslik">
+      <a class="geri-link" href="../index.html">← Dersler</a>
+      <h1>⚡ Hızlı Seçen Kazanır</h1>
+      <p id="dersBilgi">Ders · Ünite</p>
+    </div>
+
+    <div class="oyuncu-satir">
+      <div class="oyuncu-karti" id="kartO1">
+        <span class="etiket">Sol Taraf</span>
+        <span class="isim" id="isimO1">Seçilmemiş</span>
+        <span class="puan" id="puanO1">0</span>
+        <span class="durum" id="durumO1">Hazır</span>
+        <button class="btn-sec" id="btnO1Sec">🎲 Öğrenci Seç</button>
+      </div>
+      <div class="vs">VS</div>
+      <div class="oyuncu-karti" id="kartO2">
+        <span class="etiket">Sağ Taraf</span>
+        <span class="isim" id="isimO2">Seçilmemiş</span>
+        <span class="puan" id="puanO2">0</span>
+        <span class="durum" id="durumO2">Hazır</span>
+        <button class="btn-sec" id="btnO2Sec">🎲 Öğrenci Seç</button>
+      </div>
+    </div>
+
+    <div class="kurallar-kutu">
+      <h3>🎯 Nasıl Oynanır?</h3>
+      <ul>
+        <li>Tek tahtada aynı soru ve şıklar <b>iki tarafa da</b> gösterilir.</li>
+        <li>Her turda <b>ilk doğru cevabı</b> veren taraf turu <b>hemen</b> kazanır ve rakibini beklemeden yeni soruya geçilir.</li>
+        <li>Doğru cevabı <b>ilk veren</b> taraf <b>+1 puan</b> alır; doğru şık hemen yeşil olur.</li>
+        <li>Yanlış yapan taraf <b>rakibinin cevabını bekler</b>. İkisi de yanlış yaparsa <b>kimse puan alamaz</b>.</li>
+        <li>Tur biter bitmez <b>otomatik olarak yeni tura</b> geçilir.</li>
+        <li>Her gol <b>+1</b>, yediğin gol <b>−1</b> · puanlar kalıcıdır.</li>
+      </ul>
+    </div>
+
+    <div class="kontrol">
+      <button class="btn" id="btnRastgeleIkili">🎲 Rastgele 2 Öğrenci Seç</button>
+      <button class="btn" id="btnSiralama">🏆 Sıralama</button>
+      <button class="btn ikincil" id="btnSifirla">Skorları Sıfırla</button>
+    </div>
+
+    <div class="baslat-alani">
+      <button class="btn-baslat" id="btnOyunuBaslat" disabled>OYUNU BAŞLAT</button>
+      <p class="baslat-not" id="baslatNot">Başlamak için iki öğrenci seç</p>
+    </div>
+  </section>
+
+  <!-- ================= EKRAN 2: OYUN ================= -->
+  <section id="ekranOyun" class="ekran" hidden>
+    <div class="ilerleme-kutu">
+      <div class="ilerleme-baslik">
+        <button class="btn-kucuk" id="btnGeriGiris">← Çık</button>
+        <h3>İlerleme</h3>
+        <span class="tur-sayaci" id="turSayaci">Tur 0</span>
+      </div>
+      <div class="ilerleme-bilgi">
+        <span id="adv1">—</span>
+        <span class="orta">Önceki Tur Kazananı</span>
+        <span id="adv2">—</span>
+      </div>
+      <div class="bar-kutu">
+        <div class="bar" id="barO1"></div>
+        <div class="bar-orta"></div>
+        <div class="bar" id="barO2"></div>
+      </div>
+      <div class="bar-etiketler">
+        <span id="lblO1">Sol</span>
+        <span id="sonucTur">Tur Bekleniyor</span>
+        <span id="lblO2">Sağ</span>
+      </div>
+      <div class="skor-satir">
+        <span class="skor-chip sol" id="chipO1">Oyuncu 1: 0</span>
+        <span class="skor-chip sag" id="chipO2">Oyuncu 2: 0</span>
+      </div>
+    </div>
+
+    <div class="soru-kutu" id="soruKutu">
+      <div class="tur-bilgi">
+        <span id="turNo">Tur 1</span>
+        <span id="zorluk">Kolay</span>
+        <span id="sure">İlk doğru cevap turu bitirir · yanlışta rakip beklenir</span>
+      </div>
+      <div class="soru-metni" id="soruMetni">Soru yükleniyor...</div>
+
+      <div class="bolumler tek-tahta">
+        <div class="bolum sol" id="bolumSol">
+          <div class="bolum-isim" id="bolumIsim1">Sol Taraf</div>
+          <div class="secenekler tektahta" id="seceneklerSol"></div>
+          <div class="bolum-durum" id="durumSol">Bekliyor...</div>
+        </div>
+
+        <div class="orta-cizgi"></div>
+
+        <div class="bolum sag" id="bolumSag">
+          <div class="bolum-isim" id="bolumIsim2">Sağ Taraf</div>
+          <div class="secenekler tektahta" id="seceneklerSag"></div>
+          <div class="bolum-durum" id="durumSag">Bekliyor...</div>
+        </div>
+      </div>
+
+      <div class="bilgi-cizgi" id="bilgiCizgi">
+        İki taraf da aynı soruyu görür. İlk doğru cevap turu kazanır ve hemen yeni soruya geçilir; yanlış cevapta rakip beklenir.
+      </div>
+    </div>
+
+    <div class="kontrol">
+      <button class="btn" id="btnSiralamaOyun">🏆 Sıralama</button>
+    </div>
+  </section>
+
+  <div class="ogrenci-modal" id="ogrenciModal">
+    <div class="ogrenci-kutu">
+      <div class="ogrenci-baslik">
+        <h3>Öğrenci Seç</h3>
+        <button class="ogrenci-kapat" id="btnOgrenciKapat">✕</button>
+      </div>
+      <p id="ogrenciSinif">Sınıf bilgisi</p>
+      <p id="ogrenciIsim">—</p>
+      <p id="ogrenciAlt">—</p>
+      <div class="ogrenci-aksiyon">
+        <button class="btn-sec buyuk" id="btnOgrenciSec2">🎲 Rastgele Seç</button>
+        <button class="btn ikincil" id="btnOgrenciKapat2">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../data.js"></script>
+  <script src="../siniflar.js"></script>
+  <script src="../puanlar.js"></script>
+  <script src="sorular.js"></script>
+  <script src="hizli-secen.js"></script>
+</body>
+
+</html>
