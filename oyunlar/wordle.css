@@ -75,6 +75,115 @@ body {
   gap: 16px;
 }
 
+/* ---------- Takım skorları ---------- */
+.skor-panel {
+  position: fixed;
+  right: 20px;
+  top: 96px;
+  width: 190px;
+  background: var(--card);
+  border: 1px solid #334155;
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+
+.skor-panel h2 {
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.skor-satir {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid #334155;
+}
+
+.skor-satir[data-takim="A"] .skor-deger {
+  color: #7dd3fc;
+}
+
+.skor-satir[data-takim="B"] .skor-deger {
+  color: #fcd34d;
+}
+
+.skor-ad {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.skor-kontroller {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.skor-btn {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #475569;
+  border-radius: 10px;
+  background: var(--card-hover);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.skor-btn:hover {
+  background: #334155;
+  border-color: var(--accent);
+}
+
+.skor-btn:active {
+  transform: scale(0.94);
+}
+
+.skor-deger {
+  flex: 1;
+  text-align: center;
+  font-size: 1.9rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.skor-sifirla {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 8px;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.skor-sifirla:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
 /* ---------- Durum çubuğu ---------- */
 .durum-cubugu {
   width: 100%;
@@ -268,12 +377,52 @@ body {
 }
 
 /* ---------- Mesaj ---------- */
+.mesaj-satir {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
 .mesaj {
+  flex: 1 1 auto;
+  min-width: 0;
   min-height: 26px;
   text-align: center;
   font-weight: 800;
   font-size: 1rem;
   color: var(--muted);
+}
+
+.btn-yine-de {
+  flex: 0 0 auto;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: #24334a;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 900;
+  font-size: 0.9rem;
+  min-height: 44px;
+  padding: 8px 18px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-yine-de:hover {
+  background: #334155;
+}
+
+.btn-yine-de:active {
+  transform: scale(0.97);
 }
 
 .mesaj.basari {
@@ -513,12 +662,28 @@ body {
   border-color: var(--accent);
 }
 
+.ozel-hata-satir {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-top: 6px;
+}
+
 .ozel-hata {
+  flex: 1 1 auto;
+  min-width: 0;
   min-height: 20px;
   color: #f87171;
   font-size: 0.85rem;
   font-weight: 700;
-  margin-top: 6px;
+}
+
+.btn-yine-de-ozel {
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
 }
 
 .ozel-aksiyon {
@@ -564,6 +729,67 @@ body {
 
 .btn-ozel-iptal:hover {
   background: #334155;
+}
+
+/* ---------- Tur sonu skor sorusu ---------- */
+.skor-secenekler {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.skor-secenek {
+  min-height: 48px;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.skor-secenek:hover {
+  filter: brightness(1.08);
+}
+
+.skor-secenek:active {
+  transform: scale(0.98);
+}
+
+.skor-secenek.a {
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  color: #042f2e;
+}
+
+.skor-secenek.b {
+  background: linear-gradient(135deg, #fde68a, #eab308);
+  color: #3b2b05;
+}
+
+.skor-secenek.hayir {
+  background: var(--card-hover);
+  border: 1px solid #334155;
+  color: var(--text);
+}
+
+@media (max-width: 1100px) {
+  .skor-panel {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+  }
+
+  .skor-satir {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .skor-kontroller {
+    width: auto;
+  }
 }
 
 @media (max-width: 420px) {

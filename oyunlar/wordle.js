@@ -3,6 +3,7 @@
 
   // ---------- Sabitler ----------
   const MAX_HAK = 6;
+  const SKOR_KEY = "wordleSkor_v1";
   const UZUNLUKLAR = [4, 5, 6];
   const INGILIZ_HARFLER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const KLAVYE_SATIRLARI = [
@@ -26,6 +27,10 @@
   let bitti = false;
   let ozelMod = false;
   let klavyeDurum = {};
+  let sozluk = null; // İngilizce sözlük (A-Z kelimeler)
+  let sozlukHazir = false;
+  let ozelBekleyenKelime = ""; // Sözlükte olmayıp "Yine de kullan" bekleyen kelime
+  let skorlar = { A: 0, B: 0 };
 
   // ---------- Yardımcılar ----------
   function ingilizceBuyuk(metin) {
@@ -34,15 +39,79 @@
       .replace(/[^A-Z]/g, "");
   }
 
-  function mesajAyarla(metin, tur) {
+  function mesajAyarla(metin, tur, zorla) {
     mesajEl.textContent = metin;
     mesajEl.className = "mesaj" + (tur ? " " + tur : "");
+    el("btnYineDe").hidden = !zorla;
   }
 
   function salla() {
     tahta.classList.remove("salla");
     void tahta.offsetWidth;
     tahta.classList.add("salla");
+  }
+
+  // ---------- Takım skorları ----------
+  function skorlariYukle() {
+    try {
+      const ham = localStorage.getItem(SKOR_KEY);
+      if (!ham) return;
+      const veri = JSON.parse(ham);
+      if (veri && Number.isFinite(veri.A)) skorlar.A = Math.trunc(veri.A);
+      if (veri && Number.isFinite(veri.B)) skorlar.B = Math.trunc(veri.B);
+    } catch (hata) {
+      /* Depolama kapalıysa sıfırdan başla */
+    }
+  }
+
+  function skorlariKaydet() {
+    try {
+      localStorage.setItem(SKOR_KEY, JSON.stringify(skorlar));
+    } catch (hata) {
+      /* Yoksay */
+    }
+  }
+
+  function skorEkraniniGuncelle() {
+    el("skorA").textContent = String(skorlar.A);
+    el("skorB").textContent = String(skorlar.B);
+  }
+
+  function skorDegistir(takim, delta) {
+    if (takim !== "A" && takim !== "B") return;
+    const miktar = Number(delta);
+    if (!Number.isFinite(miktar)) return;
+    skorlar[takim] += miktar;
+    skorlariKaydet();
+    skorEkraniniGuncelle();
+  }
+
+  function skorSifirla() {
+    skorlar.A = 0;
+    skorlar.B = 0;
+    skorlariKaydet();
+    skorEkraniniGuncelle();
+  }
+
+  function skorModalAc(neden) {
+    el("skorModalAciklama").textContent =
+      neden === "kazandi"
+        ? "Kelime bulundu! Skor güncellensin mi?"
+        : "Hakkın doldu. Skor güncellensin mi?";
+    el("skorModal").classList.add("acik");
+    el("skorModal").setAttribute("aria-hidden", "false");
+  }
+
+  function skorModalKapat() {
+    el("skorModal").classList.remove("acik");
+    el("skorModal").setAttribute("aria-hidden", "true");
+  }
+
+  function skorSonucVer(takim) {
+    skorDegistir(takim, 1);
+    skorModalKapat();
+    const tur = mesajEl.className.replace(/\bmesaj\b/g, "").trim();
+    mesajAyarla(`${mesajEl.textContent} · ${takim} Takımına +1 verildi.`, tur);
   }
 
   function kelimeleriYukle() {
@@ -67,6 +136,44 @@
       havuz[u] = Array.from(new Set(havuz[u]));
     });
     kelimeHavuzu = havuz;
+  }
+
+  // İngilizce sözlüğü yükle: sözlükte olmayan tahminler kabul edilmez.
+  // Kaynak: SCOWL / dwyl english-words (3–12 harfli, A–Z kelimeler).
+  async function sozluguYukle() {
+    try {
+      const yanit = await fetch("wordle-sozluk.txt?v=20261119", { cache: "force-cache" });
+      if (!yanit.ok) throw new Error("HTTP " + yanit.status);
+      const metin = await yanit.text();
+      sozluk = new Set(
+        metin
+          .split(/\r?\n/)
+          .map((kelime) => kelime.trim().toUpperCase())
+          .filter((kelime) => /^[A-Z]{3,12}$/.test(kelime))
+      );
+
+      // Kendi listemizdeki kelimeler sözlükte yoksa da geçerli sayılsın.
+      UZUNLUKLAR.forEach((u) => {
+        kelimeHavuzu[u].forEach((kelime) => sozluk.add(kelime));
+      });
+
+      sozlukHazir = true;
+      if (!bitti && hedef) klavyeAc();
+      if (hedef) mesajAyarla("", "");
+    } catch (hata) {
+      sozlukHazir = false;
+      klavyeKilitle();
+      mesajAyarla("İngilizce sözlük yüklenemedi. Sayfayı yenile.", "hata");
+    }
+  }
+
+  function sozlukteMi(kelime) {
+    return sozlukHazir && sozluk ? sozluk.has(kelime) : false;
+  }
+
+  function klavyeyiOyunDurumunaGoreAyarla() {
+    if (bitti || !sozlukHazir) klavyeKilitle();
+    else klavyeAc();
   }
 
   function uzunlukButonlariGuncelle() {
@@ -236,7 +343,7 @@
     klavyeDurum = {};
 
     tahtaKur();
-    klavyeAc();
+    klavyeyiOyunDurumunaGoreAyarla();
     klavyeGuncelle();
     durumGuncelle();
     mesajAyarla("", "");
@@ -254,7 +361,7 @@
     if (UZUNLUKLAR.includes(harfSayisi)) secilenUzunluk = harfSayisi;
 
     tahtaKur();
-    klavyeAc();
+    klavyeyiOyunDurumunaGoreAyarla();
     klavyeGuncelle();
     durumGuncelle();
     mesajAyarla("", "");
@@ -306,19 +413,21 @@
   }
 
   function ekle(harf) {
-    if (bitti || !hedef) return;
+    if (bitti || !hedef || !sozlukHazir) return;
     if (mevcut.length >= harfSayisi) return;
+    mesajAyarla("", ""); // Yazmaya başlayınca eski "Yine de yaz" uyarısını kaldır
     mevcut += harf;
     kutulariYaz();
   }
 
   function sil() {
-    if (bitti || !hedef || !mevcut.length) return;
+    if (bitti || !hedef || !sozlukHazir || !mevcut.length) return;
+    mesajAyarla("", ""); // Kelime değişince eski "Yine de yaz" uyarısını kaldır
     mevcut = mevcut.slice(0, -1);
     kutulariYaz();
   }
 
-  function gonder() {
+  function gonder(zorla) {
     if (bitti || !hedef) return;
 
     if (mevcut.length !== harfSayisi) {
@@ -327,7 +436,18 @@
       return;
     }
 
+    if (!sozlukHazir) {
+      mesajAyarla("İngilizce sözlük yükleniyor, biraz bekler misin?", "uyari");
+      return;
+    }
+
     const tahmin = mevcut;
+    if (!sozlukteMi(tahmin) && !zorla) {
+      mesajAyarla(`“${tahmin}” İngilizce sözlükte yok. İstersen “Yine de yaz” ile kabul ettirebilirsin.`, "uyari", true);
+      salla();
+      return;
+    }
+    if (zorla && sozluk) sozluk.add(tahmin); // Aynı uyarı tekrar çıkmasın
     const renkler = degerlendir(tahmin);
     const satir = deneme;
 
@@ -348,6 +468,7 @@
       bitti = true;
       mesajAyarla(`🎉 Tebrikler! ${deneme} denemede bildin.`, "basari");
       klavyeKilitle();
+      skorModalAc("kazandi");
       return;
     }
 
@@ -355,6 +476,7 @@
       bitti = true;
       mesajAyarla(`😔 Hakkın doldu. Doğru kelime: ${hedef}`, "hata");
       klavyeKilitle();
+      skorModalAc("kaybetti");
       return;
     }
 
@@ -362,9 +484,15 @@
   }
 
   // ---------- Kendi kelimeni ekle ----------
+  function ozelHataAyarla(metin, zorla) {
+    el("ozelHata").textContent = metin;
+    el("btnOzelYineDe").hidden = !zorla;
+    if (!zorla) ozelBekleyenKelime = "";
+  }
+
   function ozelModalAc() {
     el("ozelGirdi").value = "";
-    el("ozelHata").textContent = "";
+    ozelHataAyarla("");
     el("ozelModal").classList.add("acik");
     el("ozelModal").setAttribute("aria-hidden", "false");
     setTimeout(() => el("ozelGirdi").focus(), 50);
@@ -373,28 +501,41 @@
   function ozelModalKapat() {
     el("ozelModal").classList.remove("acik");
     el("ozelModal").setAttribute("aria-hidden", "true");
-    el("ozelHata").textContent = "";
+    ozelHataAyarla("");
   }
 
   function ozelKelimeDene() {
     const ham = el("ozelGirdi").value.trim();
     if (!ham) {
-      el("ozelHata").textContent = "Bir kelime yaz.";
+      ozelHataAyarla("Bir kelime yaz.");
       el("ozelGirdi").focus();
       return;
     }
     if (!/^[A-Za-z][A-Za-z' -]*$/.test(ham)) {
-      el("ozelHata").textContent = "Yalnızca İngilizce harf kullan (A-Z).";
+      ozelHataAyarla("Yalnızca İngilizce harf kullan (A-Z).");
       el("ozelGirdi").focus();
       return;
     }
 
     const kelime = ingilizceBuyuk(ham);
     if (kelime.length < 3 || kelime.length > 12) {
-      el("ozelHata").textContent = "Kelime 3–12 harf arasında olmalı.";
+      ozelHataAyarla("Kelime 3–12 harf arasında olmalı.");
       el("ozelGirdi").focus();
       return;
     }
+
+    if (!sozlukHazir) {
+      ozelHataAyarla("İngilizce sözlük yükleniyor, biraz sonra tekrar dene.");
+      el("ozelGirdi").focus();
+      return;
+    }
+    if (!sozlukteMi(kelime)) {
+      ozelBekleyenKelime = kelime;
+      ozelHataAyarla(`“${kelime}” İngilizce sözlükte yok.`, true);
+      el("ozelGirdi").focus();
+      return;
+    }
+    if (sozluk) sozluk.add(kelime);
 
     ozelModalKapat();
     ozelKelimeBaslat(kelime);
@@ -402,6 +543,14 @@
 
   // ---------- Olaylar ----------
   document.addEventListener("keydown", (e) => {
+    if (el("skorModal").classList.contains("acik")) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        skorModalKapat();
+      }
+      return;
+    }
+
     if (el("ozelModal").classList.contains("acik")) {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -446,6 +595,11 @@
     el("btnYeniKelime").blur();
   };
 
+  el("btnYineDe").onclick = () => {
+    gonder(true);
+    el("btnYineDe").blur();
+  };
+
   el("btnOzelKelime").onclick = () => {
     ozelModalAc();
     el("btnOzelKelime").blur();
@@ -462,16 +616,60 @@
     ozelKelimeDene();
     el("btnOzelOyna").blur();
   };
+  el("btnOzelYineDe").onclick = () => {
+    const kelime = ozelBekleyenKelime;
+    if (!kelime) return;
+    ozelBekleyenKelime = "";
+    if (sozluk) sozluk.add(kelime);
+    ozelModalKapat();
+    ozelKelimeBaslat(kelime);
+    el("btnOzelYineDe").blur();
+  };
   el("ozelModal").addEventListener("click", (e) => {
     if (e.target === el("ozelModal")) ozelModalKapat();
   });
   el("ozelGirdi").addEventListener("input", () => {
-    el("ozelHata").textContent = "";
+    ozelHataAyarla("");
+  });
+
+  document.querySelectorAll("[data-skor-takim]").forEach((btn) => {
+    btn.onclick = () => {
+      skorDegistir(btn.dataset.skorTakim, parseInt(btn.dataset.skorDelta, 10));
+      btn.blur();
+    };
+  });
+
+  el("btnSkorSifirla").onclick = () => {
+    skorSifirla();
+    el("btnSkorSifirla").blur();
+  };
+
+  el("btnSkorKapat").onclick = () => {
+    skorModalKapat();
+    el("btnSkorKapat").blur();
+  };
+  el("btnSkorHayir").onclick = () => {
+    skorModalKapat();
+    el("btnSkorHayir").blur();
+  };
+  document.querySelectorAll("[data-skor-ver]").forEach((btn) => {
+    btn.onclick = () => {
+      skorSonucVer(btn.dataset.skorVer);
+      btn.blur();
+    };
+  });
+  el("skorModal").addEventListener("click", (e) => {
+    if (e.target === el("skorModal")) skorModalKapat();
   });
 
   // ---------- Başlat ----------
+  skorlariYukle();
+  skorEkraniniGuncelle();
   kelimeleriYukle();
   klavyeKur();
   const ilkUzunluk = UZUNLUKLAR.find((u) => kelimeHavuzu[u].length) || 5;
   uzunlukSec(ilkUzunluk);
+  klavyeyiOyunDurumunaGoreAyarla();
+  if (hedef) mesajAyarla("İngilizce sözlük yükleniyor…", "");
+  sozluguYukle();
 })();

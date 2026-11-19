@@ -16,6 +16,27 @@
   </header>
 
   <main class="wordle-alan">
+    <section class="skor-panel" aria-label="Takım skorları">
+      <h2>🏆 Takım Skorları</h2>
+      <div class="skor-satir" data-takim="A">
+        <span class="skor-ad">A Takımı</span>
+        <div class="skor-kontroller">
+          <button type="button" class="skor-btn" data-skor-takim="A" data-skor-delta="-1" aria-label="A takımından 1 puan çıkar">−</button>
+          <span class="skor-deger" id="skorA">0</span>
+          <button type="button" class="skor-btn" data-skor-takim="A" data-skor-delta="1" aria-label="A takımına 1 puan ekle">+</button>
+        </div>
+      </div>
+      <div class="skor-satir" data-takim="B">
+        <span class="skor-ad">B Takımı</span>
+        <div class="skor-kontroller">
+          <button type="button" class="skor-btn" data-skor-takim="B" data-skor-delta="-1" aria-label="B takımından 1 puan çıkar">−</button>
+          <span class="skor-deger" id="skorB">0</span>
+          <button type="button" class="skor-btn" data-skor-takim="B" data-skor-delta="1" aria-label="B takımına 1 puan ekle">+</button>
+        </div>
+      </div>
+      <button type="button" class="skor-sifirla" id="btnSkorSifirla">↺ Sıfırla</button>
+    </section>
+
     <div class="durum-cubugu">
       <span class="durum-cip" id="harfBilgi">— harf</span>
       <span class="durum-cip" id="hakBilgi">6 hak</span>
@@ -36,7 +57,10 @@
 
     <div class="tahta" id="tahta" role="grid" aria-label="Kelime tahmin tahtası"></div>
 
-    <p class="mesaj" id="mesaj" role="status" aria-live="polite"></p>
+    <div class="mesaj-satir">
+      <p class="mesaj" id="mesaj" role="status" aria-live="polite"></p>
+      <button type="button" class="btn-yine-de" id="btnYineDe" hidden>Yine de yaz</button>
+    </div>
 
     <div class="klavye" id="klavye" aria-label="İngilizce klavye"></div>
 
@@ -49,7 +73,9 @@
         <li><span class="ornek var">B</span> Sarı: harf kelimede <b>var</b>, ama yeri yanlış.</li>
         <li><span class="ornek yok">C</span> Gri: harf kelimede <b>yok</b>.</li>
         <li>Kelimeleri ekran klavyesiyle veya bilgisayar klavyesiyle yazabilirsin.</li>
-        <li><b>✏️ Kendi Kelimeni Ekle</b> ile 3–12 harfli istediğin İngilizce kelimeyi yazıp oynayabilirsin.</li>
+        <li><b>İngilizce sözlükte olmayan</b> kelimeler uyarı verir; hakkın azalmaz. İstersen <b>Yine de yaz</b> ile kabul ettirebilirsin.</li>
+        <li><b>✏️ Kendi Kelimeni Ekle</b> ile 3–12 harfli İngilizce kelimelerle oynayabilirsin; sözlükte yoksa <b>Yine de yaz</b> şıkkı çıkar.</li>
+        <li>Yandaki <b>A / B takım skorları</b> +/− ile değiştirilebilir. Tur bitince veya kelime bulununca skorun değişip değişmeyeceği sorulur.</li>
       </ul>
     </section>
   </main>
@@ -60,13 +86,31 @@
         <h2 id="ozelBaslik">✏️ Kendi Kelimeni Ekle</h2>
         <button type="button" class="ozel-kapat" id="btnOzelKapat" aria-label="Kapat">✕</button>
       </div>
-      <p class="ozel-aciklama">İngilizce harflerle 3–12 harf arası bir kelime yaz. Oyun bu kelimeyle başlar.</p>
+      <p class="ozel-aciklama">3–12 harfli bir İngilizce kelime yaz. Sözlükte yoksa <b>Yine de yaz</b> diyerek devam edebilirsin.</p>
       <input type="text" id="ozelGirdi" class="ozel-girdi" maxlength="12" autocomplete="off"
         autocapitalize="characters" spellcheck="false" placeholder="Örn. SCHOOL" />
-      <p class="ozel-hata" id="ozelHata" role="alert"></p>
+      <div class="ozel-hata-satir">
+        <p class="ozel-hata" id="ozelHata" role="alert"></p>
+        <button type="button" class="btn-yine-de btn-yine-de-ozel" id="btnOzelYineDe" hidden>Yine de yaz</button>
+      </div>
       <div class="ozel-aksiyon">
         <button type="button" class="btn-ozel-oyna" id="btnOzelOyna">Oyna</button>
         <button type="button" class="btn-ozel-iptal" id="btnOzelIptal">İptal</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ozel-modal" id="skorModal" aria-hidden="true">
+    <div class="ozel-kutu" role="dialog" aria-modal="true" aria-labelledby="skorBaslik">
+      <div class="ozel-baslik">
+        <h2 id="skorBaslik">🏆 Skor güncellensin mi?</h2>
+        <button type="button" class="ozel-kapat" id="btnSkorKapat" aria-label="Kapat">✕</button>
+      </div>
+      <p class="ozel-aciklama" id="skorModalAciklama">Tur bitti.</p>
+      <div class="skor-secenekler">
+        <button type="button" class="skor-secenek a" data-skor-ver="A">A Takımına +1</button>
+        <button type="button" class="skor-secenek b" data-skor-ver="B">B Takımına +1</button>
+        <button type="button" class="skor-secenek hayir" id="btnSkorHayir">Değişmesin</button>
       </div>
     </div>
   </div>
