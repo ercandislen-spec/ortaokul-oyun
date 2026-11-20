@@ -1,6 +1,8 @@
 const app = document.getElementById("app");
 const breadcrumb = document.getElementById("breadcrumb");
 
+let koclukSinifId = null;
+
 function setBreadcrumb(parts) {
   breadcrumb.innerHTML = parts
     .map((p, i) => {
@@ -159,6 +161,259 @@ function sinifDeposuBagla() {
   syCiz();
 }
 
+// ---------- Koçluk merkezi ----------
+function koclukBugun() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function koclukSayi(deger) {
+  const n = Number(deger);
+  if (!Number.isFinite(n)) return "—";
+  return n.toFixed(1).replace(/\.0$/, "");
+}
+
+function koclukNotAlaniCiz() {
+  const kutu = document.getElementById("notlarGrid");
+  if (!kutu || typeof Kocluk === "undefined") return;
+  kutu.innerHTML = Kocluk.dersler(koclukSinifId)
+    .map(
+      (d) => `
+      <label class="not-kutu">
+        <span class="not-ders">${d.ikon || "📘"} ${kacir(d.ad)}</span>
+        <input type="number" min="0" max="100" step="1" inputmode="numeric" data-not="${kacir(d.slug)}"
+          placeholder="0–100" aria-label="${kacir(d.ad)} notu" />
+      </label>`
+    )
+    .join("");
+}
+
+function koclukCiz() {
+  if (typeof Kocluk === "undefined") return;
+  const sec = document.getElementById("koclukSinif");
+  if (!sec) return;
+  sec.value = String(koclukSinifId);
+
+  const sinavlar = Kocluk.sinavlariAl(koclukSinifId);
+  const genel = Kocluk.genelOrtalama(koclukSinifId);
+  const sev = genel === null ? null : Kocluk.seviye(genel);
+  const dersSayisi = Kocluk.dersOrtalamalari(koclukSinifId).length;
+
+  document.getElementById("koclukOzet").innerHTML = `
+    <div class="ozet-kart">
+      <span class="ozet-etiket">Genel ortalama</span>
+      <strong class="ozet-deger" ${sev ? `style="color:${sev.renk}"` : ""}>${genel === null ? "—" : koclukSayi(genel)}</strong>
+      <span class="ozet-alt">${sev ? sev.ad : "Veri yok"}</span>
+    </div>
+    <div class="ozet-kart">
+      <span class="ozet-etiket">Girilen sınav</span>
+      <strong class="ozet-deger">${sinavlar.length}</strong>
+      <span class="ozet-alt">kayıt</span>
+    </div>
+    <div class="ozet-kart">
+      <span class="ozet-etiket">Değerlendirilen ders</span>
+      <strong class="ozet-deger">${dersSayisi}</strong>
+      <span class="ozet-alt">ders</span>
+    </div>`;
+
+  const liste = document.getElementById("sinavListe");
+  if (!sinavlar.length) {
+    liste.innerHTML = `<p class="kocluk-bos">Henüz sınav eklenmedi. Soldaki formdan ilk sınavını gir.</p>`;
+  } else {
+    const dersler = Kocluk.dersler(koclukSinifId);
+    liste.innerHTML = sinavlar
+      .slice()
+      .reverse()
+      .map((s) => {
+        const ort = Kocluk.sinavOrtalamesi(s);
+        const notlar = Object.keys(s.notlar || {})
+          .map((slug) => {
+            const ders = dersler.find((d) => d.slug === slug);
+            return `<span class="sinav-not"><b>${kacir(ders ? ders.ad : slug)}</b> ${koclukSayi(s.notlar[slug])}</span>`;
+          })
+          .join("");
+        return `
+          <article class="sinav-kart">
+            <div class="sinav-baslik">
+              <div>
+                <strong>${kacir(s.ad)}</strong>
+                <span class="sinav-tarih">${s.tarih ? kacir(s.tarih) : "Tarih yok"}</span>
+              </div>
+              <div class="sinav-sag">
+                <span class="sinav-ort">${koclukSayi(ort)} <small>ort.</small></span>
+                <button type="button" class="btn-mini btn-sil" data-sinav-sil="${kacir(s.id)}" title="Sınavı sil">🗑</button>
+              </div>
+            </div>
+            <div class="sinav-notlar">${notlar}</div>
+          </article>`;
+      })
+      .join("");
+  }
+
+  const sonuc = Kocluk.oneriler(koclukSinifId);
+  const onerilerEl = document.getElementById("oneriler");
+  if (!sonuc.maddeler.length) {
+    onerilerEl.innerHTML = `<div class="oneri-genel"><p>${sonuc.genelMesaj}</p></div>`;
+    return;
+  }
+  onerilerEl.innerHTML = `
+    <div class="oneri-genel"><p>${sonuc.genelMesaj}</p></div>
+    <div class="oneri-listesi">
+      ${sonuc.maddeler
+        .map(
+          (m) => `
+        <article class="oneri-kart ${m.seviye.anahtar}">
+          <div class="oneri-ust">
+            <span class="oneri-ders">${m.ikon} ${kacir(m.ad)}</span>
+            <span class="oneri-puan" style="color:${m.seviye.renk}">${koclukSayi(m.ortalama)}</span>
+            <span class="oneri-seviye" style="border-color:${m.seviye.renk};color:${m.seviye.renk}">${m.seviye.ad}</span>
+          </div>
+          <p>${kacir(m.metin)}</p>
+        </article>`
+        )
+        .join("")}
+    </div>`;
+}
+
+function koclukBagla() {
+  if (typeof Kocluk === "undefined") return;
+  const sec = document.getElementById("koclukSinif");
+  const form = document.getElementById("koclukForm");
+  const grid = document.getElementById("notlarGrid");
+  const hata = document.getElementById("koclukFormHata");
+  if (!sec || !form || !grid) return;
+
+  sec.value = String(koclukSinifId);
+  koclukNotAlaniCiz();
+  koclukCiz();
+
+  sec.onchange = () => {
+    koclukSinifId = parseInt(sec.value, 10);
+    koclukNotAlaniCiz();
+    koclukCiz();
+    hata.textContent = "";
+  };
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    hata.textContent = "";
+    const notlar = {};
+    grid.querySelectorAll("[data-not]").forEach((inp) => {
+      if (inp.value.trim() !== "") notlar[inp.dataset.not] = Number(inp.value);
+    });
+    const degerler = Object.values(notlar);
+    if (!degerler.length) {
+      hata.textContent = "En az bir derse not gir.";
+      return;
+    }
+    if (degerler.some((n) => !Number.isFinite(n) || n < 0 || n > 100)) {
+      hata.textContent = "Notlar 0 ile 100 arasında olmalı.";
+      return;
+    }
+    const kayit = Kocluk.ekle(koclukSinifId, {
+      ad: document.getElementById("sinavAd").value,
+      tarih: document.getElementById("sinavTarih").value,
+      notlar: notlar,
+    });
+    if (!kayit) {
+      hata.textContent = "Sınav kaydedilemedi, tekrar dene.";
+      return;
+    }
+    form.reset();
+    document.getElementById("sinavTarih").value = koclukBugun();
+    koclukCiz();
+  };
+
+  document.getElementById("btnFormTemizle").onclick = () => {
+    form.reset();
+    document.getElementById("sinavTarih").value = koclukBugun();
+    hata.textContent = "";
+  };
+
+  document.getElementById("btnYeniSinav").onclick = () => {
+    document.getElementById("sinavAd").focus();
+    grid.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  document.getElementById("btnTumunuSil").onclick = () => {
+    if (!Kocluk.sinavlariAl(koclukSinifId).length) return;
+    if (confirm("Bu sınıfa ait tüm sınav kayıtları silinsin mi?")) {
+      Kocluk.temizle(koclukSinifId);
+      hata.textContent = "";
+      koclukCiz();
+    }
+  };
+
+  document.getElementById("sinavListe").onclick = (e) => {
+    const btn = e.target.closest("[data-sinav-sil]");
+    if (!btn) return;
+    if (confirm("Bu sınav kaydı silinsin mi?")) {
+      Kocluk.sil(koclukSinifId, btn.dataset.sinavSil);
+      hata.textContent = "";
+      koclukCiz();
+    }
+  };
+}
+
+function renderKocluk() {
+  setBreadcrumb([
+    { ad: "Ana Sayfa", hash: "#/" },
+    { ad: "Koçluk Merkezi" },
+  ]);
+  document.title = "Koçluk Merkezi";
+
+  if (koclukSinifId === null || !SINIFLAR.some((s) => String(s.id) === String(koclukSinifId))) {
+    koclukSinifId = SINIFLAR.length ? SINIFLAR[0].id : 5;
+  }
+
+  app.innerHTML = `
+    <a class="back-link" href="#/">← Ana Sayfa</a>
+    <h1 class="page-title">📈 Koçluk Merkezi</h1>
+    <p class="page-sub">Sınıfını seç, sınav sonuçlarını gir; ortalamanı ve sana özel çalışma önerilerini gör.</p>
+    <section class="kocluk-panel">
+      <div class="kocluk-ust">
+        <label class="kocluk-secim">
+          <span>Sınıf</span>
+          <select id="koclukSinif">
+            ${SINIFLAR.map((s) => `<option value="${s.id}">${s.ikon} ${kacir(s.ad)}</option>`).join("")}
+          </select>
+        </label>
+        <button type="button" class="btn-mini btn-ekle" id="btnYeniSinav">+ Yeni Sınav</button>
+        <button type="button" class="btn-mini btn-sil" id="btnTumunuSil">🗑 Kayıtları Temizle</button>
+      </div>
+      <div class="kocluk-ozet" id="koclukOzet"></div>
+      <div class="kocluk-grid">
+        <section class="kocluk-form-kutu">
+          <h2>✍️ Sınav Notu Gir</h2>
+          <p class="kocluk-ipucu">Boş bıraktığın dersler ortalamaya katılmaz. Notlar 0–100 arasında olmalı.</p>
+          <form id="koclukForm">
+            <div class="form-satir">
+              <label>Sınav adı
+                <input type="text" id="sinavAd" maxlength="60" placeholder="Örn. 1. Sınav" autocomplete="off" />
+              </label>
+              <label>Tarih
+                <input type="date" id="sinavTarih" value="${koclukBugun()}" />
+              </label>
+            </div>
+            <div class="notlar-grid" id="notlarGrid"></div>
+            <p class="form-hata" id="koclukFormHata" role="alert"></p>
+            <div class="form-aksiyon">
+              <button type="submit" class="btn-kaydet">💾 Kaydet</button>
+              <button type="button" class="btn-mini" id="btnFormTemizle">Temizle</button>
+            </div>
+          </form>
+        </section>
+        <section class="kocluk-sonuc">
+          <h2>📋 Sınavlar</h2>
+          <div class="sinav-liste" id="sinavListe"></div>
+          <h2 class="oneri-baslik">💡 Çalışma Önerileri</h2>
+          <div class="oneri-alani" id="oneriler"></div>
+        </section>
+      </div>
+    </section>`;
+  koclukBagla();
+}
+
 
 function renderAnaSayfa() {
   setBreadcrumb([{ ad: "Ana Sayfa" }]);
@@ -178,6 +433,21 @@ function renderAnaSayfa() {
           <h2>Wordle <span class="yeni-etiket">YENİ</span></h2>
           <p>4, 5 veya 6 harfli İngilizce kelimeyi 6 denemede bul. Yeşil doğru yeri, sarı yanlış yeri, gri olmayan harfi gösterir.</p>
           <span class="badge">Tek oyunculu · Taslak</span>
+        </a>
+      </div>
+    </section>
+    <section class="ana-araclar">
+      <div class="bolum-baslik">
+        <h2>📈 Koçluk ve Takip</h2>
+        <p>Sınav sonuçlarını gir, ortalamanı gör ve sana özel çalışma önerileri al.</p>
+      </div>
+      <div class="grid">
+        <a class="card kocluk-kart" href="#/kocluk">
+          <span class="icon">📊</span>
+          <div class="subject-tag">Takip · Otomatik öneri</div>
+          <h2>Koçluk Merkezi <span class="yeni-etiket">YENİ</span></h2>
+          <p>Sınıfını seç, ders bazında 0–100 notlarını gir. Genel ortalama, ders sıralaması ve her derse özel çalışma önerileri anında hesaplansın.</p>
+          <span class="badge">Sınıf seç · 0–100 puan · Kalıcı kayıt</span>
         </a>
       </div>
     </section>
@@ -388,6 +658,7 @@ function router() {
   const parts = hash.replace(/^#\//, "").split("/").filter(Boolean);
 
   if (parts.length === 0) return renderAnaSayfa();
+  if (parts[0] === "kocluk") return renderKocluk();
   if (parts[0] !== "sinif") return renderAnaSayfa();
 
   const sinifId = parseInt(parts[1], 10);
